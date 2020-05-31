@@ -9,7 +9,7 @@ struct B
 	bool operator<(const B &num) const
 	{
 		if(x==num.x)
-		return y<num.y;
+			return y<num.y;
 		return x<num.x;
 	}
 };
@@ -382,9 +382,8 @@ int power(int x,int y,int p)
 ................................................................
 							 DSU
 
-int rt[n];
-int sizee[n];
 int n;
+int rt[200005],sizee[200005];
 void initialize()
 {
 	for(int i=0;i<n;i++)
@@ -423,20 +422,24 @@ void merge(int A,int B)
 ...............................................
 				Sparse Table
 
-int tablemin[n][(int)log2(n)+10];
-
-int mini(int start,int end)
+int tablemin[(int)log2(150005)+2][150005];
+int floorlog[150005];
+int maxi(int start,int end)
 {
-	int p=log2(end-start+1);
-	return min(tablemin[start][p],tablemin[end-(1<<p)+1][p]);
+    int p=floorlog[end-start+1];
+    return max(tablemin[p][start],tablemin[p][end-(1<<p)+1]);
 }
-for(int i=0;i<n;i++)
-	tablemin[i][0]=arr[i];
+for(int i=0;(1<<i)<150005;i++)
+{
+    for(int j=(1<<i);j<150005 && j<(1<<(i+1)); j++)
+        floorlog[j]=i;
+}
+for(int i=1;i<=n;i++)
+    tablemin[0][i]=arr[i];
 
 for (int j=1;(1<<j)<=n;j++) 
-	for (int i=0;(i+(1<<j)-1)<n;i++)
-		tablemin[i][j]=min(tablemin[i][j-1],tablemin[i+(1<<(j - 1))][j-1]);
-
+    for (int i=1;(i+(1<<j)-1)<=n;i++)
+        tablemin[j][i]=max(tablemin[j-1][i],tablemin[j-1][i+(1<<(j - 1))]);
 ...............................................
 				Segment tree
 
@@ -470,7 +473,7 @@ void update(int i,int l,int r,int l1,int r1,int val)
 		return;
 	if(l1<=l && r<=r1)
 	{
-		tree[i]+=(r-1+1)*val;
+		tree[i]+=(r-l+1)*val;
 		if(l!=r)
 			lazy[i*2]+=val,lazy[i*2+1]+=val;
 		return;
@@ -510,3 +513,49 @@ int rand(int l, int r)
     uniform_int_distribution<int> uid(l, r);
     return uid(rng);
 }
+
+.......................................................................
+								LCA
+int lvl[1000005],par[22][1000005];
+bool vis[1000005];
+int tim[2][100005];
+int ct=0;
+int dfs(int i,int p,int l)
+{
+    par[0][i]=p;
+    lvl[i]=l;
+    tim[0][i]=++ct;
+    for(auto j:v[i])
+        dfs(j,i,l+1);
+    tim[1][i]=ct;
+}
+void compute()
+{
+    for(int i=1;i<22;i++)
+        for(int j=1;j<=n;j++)
+            if(par[i-1][j])
+                par[i][j]=par[i-1][par[i-1][j]];
+}
+int LCA(int a,int b)
+{
+    if(lvl[a]<lvl[b])
+        swap(a,b);
+    int diff=lvl[a]-lvl[b];
+    for(int i=21;i>=0;i--)
+        if((1<<i)&diff)
+            a=par[i][a];
+    if(a==b)
+        return a;
+    for(int i=21;i>=0;i--)
+        if(par[i][a] && par[i][a]!=par[i][b])
+            a=par[i][a],b=par[i][b];
+    return par[0][a];
+}
+int path(int a,int h)
+{
+    for(int i=21;i>=0;i--)if((1<<i)&h)a=par[i][a];
+    return a;
+}
+..........................................................................
+
+FFT template - https://www.codechef.com/viewsolution/19136345
