@@ -560,3 +560,41 @@ int path(int a,int h)
 ..........................................................................
 
 FFT template - https://www.codechef.com/viewsolution/19136345
+
+..........................................................................
+
+Centroid Decomposition - 
+
+set<int>v[1000005];
+int subtree[1000005],partree[1000005];
+
+int dfsSubtree(int i,int p)
+{
+    int sum=0;
+    for(auto j:v[i])
+        if(j!=p)
+            sum+=dfsSubtree(j,i);
+    sum++;
+    subtree[i]=sum;
+    return sum;
+}
+ 
+int centroid(int i,int p,int sz)
+{
+    for(auto j:v[i])
+        if(j!=p && subtree[j]>sz/2)
+            return centroid(j,i,sz);
+    return i;
+}
+void decompose(int i,int p)
+{
+    dfsSubtree(i,p);
+    int cent = centroid(i,p,subtree[i]);
+    partree[cent]=p;
+    for(auto j:v[cent])
+    {
+        v[j].erase(cent);
+        decompose(j,cent);
+    }
+}
+.......................................................................
