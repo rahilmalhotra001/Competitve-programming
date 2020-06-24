@@ -597,4 +597,6 @@ void decompose(int i,int p)
         decompose(j,cent);
     }
 }
+
+https://codeforces.com/contest/342/problem/E
 .......................................................................
