@@ -518,7 +518,7 @@ int rand(int l, int r)
 								LCA
 int lvl[1000005],par[22][1000005];
 bool vis[1000005];
-int tim[2][100005];
+int tim[2][1000005];
 int ct=0;
 int dfs(int i,int p,int l)
 {
@@ -526,7 +526,8 @@ int dfs(int i,int p,int l)
     lvl[i]=l;
     tim[0][i]=++ct;
     for(auto j:v[i])
-        dfs(j,i,l+1);
+	if(j!=p)
+            dfs(j,i,l+1);
     tim[1][i]=ct;
 }
 void compute()
