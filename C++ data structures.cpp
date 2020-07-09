@@ -255,6 +255,11 @@ __gcd(a,b);
 
 lcm(a,b);
 
+Debug -
+	
+template <typename T> void debug(T t) { cout<<t<<endl; }
+template<typename T, typename... Args> void debug(T t, Args... args) { cout<<t<<" "; debug(args...); }
+
 -----------------------------------------TRIES----------------------------------------------
 
 typedef struct data
